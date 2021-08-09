@@ -18,10 +18,42 @@ public class CharacterController2D : MonoBehaviour
 	private bool m_FacingRight = false;  // For determining which way the player is currently facing.
 	private Vector3 velocity = Vector3.zero;
 
+	public float fireRate = 0;
+	public float Damage = 10;
+	public LayerMask whatToHit;
+	private float timeToFire = 0;
+	private Transform firePoint;
+
 	private void Awake()
 	{
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
+
+		firePoint = transform.FindChild("FirePoint");
+		if (firePoint == null)
+        {
+			Debug.LogError("No firepoint? What?!");
+        }
 	}
+
+	void Update()
+    {
+		
+		if(fireRate == 0)
+        {
+			if(Input.GetButtonDown("Fire1"))
+            {
+				Shoot(); // if weapon is a single fire weapon
+            }
+        }
+        else
+        {
+			if(Input.GetButton("Fire1") && Time.time > timeToFire)
+            {
+				timeToFire = Time.time + 1/fireRate;
+				Shoot(); // if weapon is a burst fire weapon
+            }
+        }
+    }
 
 
 	private void FixedUpdate()
@@ -110,4 +142,17 @@ public class CharacterController2D : MonoBehaviour
 		theScale.x *= -1;
 		transform.localScale = theScale;
 	}
+
+	void Shoot()
+    {
+		Vector2 mousePosition = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
+		Vector2 firePointPosition = new Vector2(firePoint.position.x, firePoint.position.y);
+		RaycastHit2D hit = Physics2D.Raycast(firePointPosition, mousePosition - firePointPosition, 100, whatToHit);
+		Debug.DrawLine(firePointPosition, (mousePosition-firePointPosition) *100, Color.green);
+		if (hit.collider != null)
+        {
+			Debug.DrawLine(firePointPosition, hit.point, Color.red);
+			Debug.Log("We hit " + hit.collider.name + " and did " + Damage + " damage.");
+        }
+    }
 }
