@@ -152,7 +152,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 532690090}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.29999924, y: -1.06, z: -2}
+  m_LocalPosition: {x: 1.77, y: -0.4, z: -2}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 7587256532994343111}
@@ -236,7 +236,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1060766929}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -7.69, y: 0, z: -6.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -488,6 +488,14 @@ PrefabInstance:
       propertyPath: fireRate
       value: 2.59
       objectReference: {fileID: 0}
+    - target: {fileID: 7739348403105802929, guid: bad585df72bf2094a8144daf22e712a6, type: 3}
+      propertyPath: BulletTrailPrefab
+      value: 
+      objectReference: {fileID: 3532796664023412253, guid: c385df488ab067c429f40d9615cbd303, type: 3}
+    - target: {fileID: 7739348403105802929, guid: bad585df72bf2094a8144daf22e712a6, type: 3}
+      propertyPath: MuzzleFlashPrefab
+      value: 
+      objectReference: {fileID: 438605380932687611, guid: dc0fbc3363773574eaa03850ffaddcd0, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bad585df72bf2094a8144daf22e712a6, type: 3}
 --- !u!4 &7587256532994343111 stripped
