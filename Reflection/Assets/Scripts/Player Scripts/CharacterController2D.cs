@@ -15,9 +15,16 @@ public class CharacterController2D : MonoBehaviour
 	private bool m_Grounded;            // Whether or not the player is grounded.
 	const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up
 	private Rigidbody2D m_Rigidbody2D;
-	private bool m_FacingRight = false;  // For determining which way the player is currently facing.
+	public bool m_FacingRight = false;  // For determining which way the player is currently facing.
 	private Vector3 velocity = Vector3.zero;
 
+
+	public int directionIndicator = 1; //1 for main body, -1 for shadow so the shadow jumps in opposite direction
+	public bool isMainBody = true; //false means shadow
+	public SyncPlayerPartsMovements syncMovement = null;
+	public float stopVelocityCutoff = 0.05f;
+
+	//ATS PARTS
 	public float fireRate = 0;
 	public float Damage = 10;
 	public LayerMask whatToHit;
@@ -28,39 +35,34 @@ public class CharacterController2D : MonoBehaviour
 	public float effectSpawnRate = 10;
 	public Transform MuzzleFlashPrefab;
 
+
+
 	private void Awake()
 	{
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
 
-		firePoint = transform.FindChild("FirePoint");
+		firePoint = transform.Find("FirePoint");
 		if (firePoint == null)
         {
 			Debug.LogError("No firepoint? What?!");
         }
 	}
 
-	void Update()
+    private void Start()
     {
-		
-		if(fireRate == 0)
+		syncMovement = GameObject.FindWithTag("Player").GetComponent<SyncPlayerPartsMovements>();
+		if(syncMovement == null)
         {
-			if(Input.GetButtonDown("Fire1"))
-            {
-				Shoot(); // if weapon is a single fire weapon
-            }
+			Debug.LogError("Cannot find player sync movement script");
         }
-        else
-        {
-			if(Input.GetButton("Fire1") && Time.time > timeToFire)
-            {
-				timeToFire = Time.time + 1/fireRate;
-				Shoot(); // if weapon is a burst fire weapon
-            }
-        }
+    }
+    void Update()
+    {
+        PlayerFire();
     }
 
 
-	private void FixedUpdate()
+    private void FixedUpdate()
 	{
 		m_Grounded = false;
 
@@ -75,8 +77,62 @@ public class CharacterController2D : MonoBehaviour
 	}
 
 
-	public void Move(float move, bool crouch, bool jump)
+    #region Movement
+
+    //this function update the stop status of main body and shadow in SyncPlayerPartsMovements.cs
+
+ //   public void OnCollisionEnter2D(Collision2D collision)
+ //   {
+		
+	//	//if it's not a blocker, do nothing
+	//	if (collision.gameObject.tag != "Block")
+ //       {
+	//		return;
+ //       }
+	//	Debug.Log("collision entered block");
+	//	//else we signal stop
+	//	if (isMainBody)
+ //       {
+	//		syncMovement.UpdateMainBodyStopStatus(true);
+ //       }
+ //       else
+ //       {
+	//		syncMovement.UpdateShadowStopStatus(true);
+ //       }
+ //   }
+
+ //   public void OnCollisionExit2D(Collision2D collision)
+ //   {
+		
+	//	//if it's not a blocker, do nothing
+	//	if (collision.gameObject.tag != "Block")
+ //       {
+	//		return;
+ //       }
+	//	Debug.Log("collision exit block");
+	//	//else we switch the stop signal
+	//	if (isMainBody)
+	//	{
+	//		syncMovement.UpdateMainBodyStopStatus(false);
+	//	}
+	//	else
+	//	{
+	//		syncMovement.UpdateShadowStopStatus(false);
+	//	}
+	//}
+
+
+    public void Move(float move, bool crouch, bool jump)
 	{
+		//bool isStopped = syncMovement.GetStopStatus();
+  //      if (isStopped)
+  //      {
+		//	Debug.Log("Stopped");
+		//	m_Rigidbody2D.velocity.Set(0f, m_Rigidbody2D.velocity.y);
+		//	return;
+  //      }
+
+
 		// If crouching, check to see if the character can stand up
 		if (!crouch)
 		{
@@ -131,7 +187,7 @@ public class CharacterController2D : MonoBehaviour
 		{
 			// Add a vertical force to the player.
 			m_Grounded = false;
-			m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+			m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce) * directionIndicator);
 		}
 	}
 
@@ -147,6 +203,33 @@ public class CharacterController2D : MonoBehaviour
 		transform.localScale = theScale;
 	}
 
+	#endregion
+
+
+
+
+
+
+
+	#region Automatic_Target_Shooting
+	private void PlayerFire()
+	{
+		if (fireRate == 0)
+		{
+			if (Input.GetButtonDown("Fire1"))
+			{
+				Shoot(); // if weapon is a single fire weapon
+			}
+		}
+		else
+		{
+			if (Input.GetButton("Fire1") && Time.time > timeToFire)
+			{
+				timeToFire = Time.time + 1 / fireRate;
+				Shoot(); // if weapon is a burst fire weapon
+			}
+		}
+	}
 	void Shoot()
     {
 		Vector2 mousePosition = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
@@ -174,4 +257,5 @@ public class CharacterController2D : MonoBehaviour
 		clone.localScale = new Vector3(size, size, size);
 		Destroy(clone.gameObject, 0.02f);
     }
+    #endregion
 }

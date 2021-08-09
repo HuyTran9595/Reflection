@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 8589305097767523491}
   m_Layer: 8
   m_Name: Floor Sprite
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
